@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"os"
 	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -14,23 +13,12 @@ import (
 )
 
 type DatabaseConfig struct {
-	Host     string
-	Port     string
-	User     string
-	Password string
-	DBName   string
-	SSLMode  string
-}
-
-func GetDatabaseConfig() *DatabaseConfig {
-	return &DatabaseConfig{
-		Host:     getEnv("DB_HOST", "localhost"),
-		Port:     getEnv("DB_PORT", "5432"),
-		User:     getEnv("DB_USER", "postgres"),
-		Password: getEnv("DB_PASSWORD", "postgres"),
-		DBName:   getEnv("DB_NAME", "finauth"),
-		SSLMode:  getEnv("DB_SSLMODE", "disable"),
-	}
+	Host     string `json:"host"`
+	Port     string `json:"port"`
+	User     string `json:"user"`
+	Password string `json:"password"`
+	DBName   string `json:"name"`
+	SSLMode  string `json:"ssl_mode"`
 }
 
 func (c *DatabaseConfig) GetConnectionString() string {
@@ -41,8 +29,8 @@ func (c *DatabaseConfig) GetConnectionString() string {
 }
 
 func InitDB() (*pgxpool.Pool, error) {
-	config := GetDatabaseConfig()
-	connString := config.GetConnectionString()
+	cfg := GetConfig().Database
+	connString := cfg.GetConnectionString()
 
 	poolConfig, err := pgxpool.ParseConfig(connString)
 	if err != nil {
@@ -71,8 +59,8 @@ func InitDB() (*pgxpool.Pool, error) {
 }
 
 func InitGormDB() (*gorm.DB, error) {
-	config := GetDatabaseConfig()
-	dsn := config.GetConnectionString()
+	cfg := GetConfig().Database
+	dsn := cfg.GetConnectionString()
 
 	gormConfig := &gorm.Config{
 		Logger: logger.Default.LogMode(logger.Info),
@@ -101,11 +89,4 @@ func InitGormDB() (*gorm.DB, error) {
 
 	log.Println("Successfully connected to PostgreSQL database using GORM")
 	return db, nil
-}
-
-func getEnv(key, defaultValue string) string {
-	if value := os.Getenv(key); value != "" {
-		return value
-	}
-	return defaultValue
 }

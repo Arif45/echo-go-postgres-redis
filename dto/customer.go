@@ -2,6 +2,8 @@ package dto
 
 import (
 	"fin-auth/models"
+	"fin-auth/utils"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -94,4 +96,85 @@ func (r *CreateCustomerRequest) GetAddress(addressInfo *AddressInfo) *models.Add
 // ptrString returns a pointer to the given string.
 func ptrString(s string) *string {
 	return &s
+}
+
+func (req *CreateCustomerRequest) ValidateRequest() *string {
+	if *req.VerificationType != utils.VERIFICATION_TYPE_RELIANCE && *req.VerificationType != utils.VERIFICATION_TYPE_STANDARD {
+		return utils.StringPtr("Invalid verification type")
+	}
+
+	var basicInfo = req.BasicInfo
+
+	if !utils.IsValidName(basicInfo.FirstName) {
+		return utils.StringPtr("Invalid first name")
+	}
+
+	if !utils.IsValidName(basicInfo.LastName) {
+		return utils.StringPtr("Invalid last name")
+	}
+
+	if !utils.DateFieldValidation(basicInfo.DOB, "2006-01-02") {
+		return utils.StringPtr("Invalid date of birth")
+	}
+
+	if !utils.IsEmailValid(basicInfo.Email) {
+		return utils.StringPtr("Invalid email address")
+	}
+
+	_, err := utils.ValidateAndNormalizePhone(basicInfo.Phone, "")
+	if err != nil {
+		return utils.StringPtr("Invalid phone number")
+	}
+
+	if strings.TrimSpace(basicInfo.CountryOfResidence) == " " {
+		return utils.StringPtr("Invalid country of residence")
+	}
+
+	if strings.TrimSpace(basicInfo.Nationality) == " " {
+		return utils.StringPtr("Invalid nationality")
+	}
+	if strings.TrimSpace(basicInfo.TIN) == " " {
+		return utils.StringPtr("Invalid TIN")
+	}
+
+	var address = req.Address
+
+	if strings.TrimSpace(address.Street) == " " {
+		return utils.StringPtr("Invalid street")
+	}
+	if strings.TrimSpace(address.City) == " " {
+		return utils.StringPtr("Invalid city")
+	}
+	if strings.TrimSpace(address.State) == " " {
+		return utils.StringPtr("Invalid state")
+	}
+	if strings.TrimSpace(address.PostalCode) == " " {
+		return utils.StringPtr("Invalid postal code")
+	}
+	if strings.TrimSpace(address.Country) == " " {
+		return utils.StringPtr("Invalid country")
+	}
+
+	var financialProfile = req.FinancialProfile
+	if financialProfile.OccupationID == nil || *financialProfile.OccupationID <= 0 {
+		return utils.StringPtr("Invalid occupation ID")
+	}
+	if financialProfile.SourceOfFundID == nil || *financialProfile.SourceOfFundID <= 0 {
+		return utils.StringPtr("Invalid source of fund ID")
+	}
+	if financialProfile.PurposeID == nil || *financialProfile.PurposeID <= 0 {
+		return utils.StringPtr("Invalid purpose ID")
+	}
+	if financialProfile.MonthlyVolumeUSD <= 0 {
+		return utils.StringPtr("Invalid monthly volume in USD")
+	}
+	if strings.TrimSpace(financialProfile.SOFDescription) == " " {
+		return utils.StringPtr("Invalid source of fund description")
+	}
+
+	var metaData = req.MetaData
+	if strings.TrimSpace(metaData.Reference) == " " {
+		return utils.StringPtr("Invalid reference in meta data")
+	}
+	return nil
 }

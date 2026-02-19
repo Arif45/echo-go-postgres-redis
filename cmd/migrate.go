@@ -42,6 +42,10 @@ func init() {
 }
 
 func runMigration() {
+	if err := config.LoadConfig(); err != nil {
+		log.Fatalf("Failed to load config: %v", err)
+	}
+
 	log.Println("Connecting to database...")
 	db, err := config.InitGormDB()
 	if err != nil {
@@ -62,6 +66,10 @@ func runMigration() {
 }
 
 func checkMigrationStatus() {
+	if err := config.LoadConfig(); err != nil {
+		log.Fatalf("Failed to load config: %v", err)
+	}
+
 	log.Println("Connecting to database...")
 	db, err := config.InitGormDB()
 	if err != nil {

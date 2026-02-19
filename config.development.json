@@ -1,0 +1,20 @@
+{
+  "app_env": "development",
+  "server": {
+    "port": "8080"
+  },
+  "database": {
+    "host": "localhost",
+    "port": "5432",
+    "user": "postgres",
+    "password": "postgres",
+    "name": "finauth",
+    "ssl_mode": "disable"
+  },
+  "redis": {
+    "host": "localhost",
+    "port": "6379",
+    "password": "",
+    "db": 0
+  }
+}

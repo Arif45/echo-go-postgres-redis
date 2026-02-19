@@ -4,41 +4,25 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"strconv"
 	"time"
 
 	"github.com/redis/go-redis/v9"
 )
 
 type RedisConfig struct {
-	Host     string
-	Port     string
-	Password string
-	DB       int
-}
-
-func GetRedisConfig() *RedisConfig {
-	dbStr := getEnv("REDIS_DB", "0")
-	db, err := strconv.Atoi(dbStr)
-	if err != nil {
-		db = 0
-	}
-
-	return &RedisConfig{
-		Host:     getEnv("REDIS_HOST", "localhost"),
-		Port:     getEnv("REDIS_PORT", "6379"),
-		Password: getEnv("REDIS_PASSWORD", ""),
-		DB:       db,
-	}
+	Host     string `json:"host"`
+	Port     string `json:"port"`
+	Password string `json:"password"`
+	DB       int    `json:"db"`
 }
 
 func InitRedis() (*redis.Client, error) {
-	config := GetRedisConfig()
+	cfg := GetConfig().Redis
 
 	client := redis.NewClient(&redis.Options{
-		Addr:         fmt.Sprintf("%s:%s", config.Host, config.Port),
-		Password:     config.Password,
-		DB:           config.DB,
+		Addr:         fmt.Sprintf("%s:%s", cfg.Host, cfg.Port),
+		Password:     cfg.Password,
+		DB:           cfg.DB,
 		DialTimeout:  5 * time.Second,
 		ReadTimeout:  3 * time.Second,
 		WriteTimeout: 3 * time.Second,

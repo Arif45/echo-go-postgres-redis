@@ -3,13 +3,12 @@ module fin-auth
 go 1.25.0
 
 require (
-	github.com/getsentry/sentry-go/echo v0.42.0
-	github.com/go-errors/errors v1.4.2
 	github.com/google/uuid v1.6.0
 	github.com/jackc/pgx/v5 v5.8.0
 	github.com/labstack/echo/v4 v4.15.0
 	github.com/lib/pq v1.11.2
 	github.com/nyaruka/phonenumbers v1.6.9
+	github.com/redis/go-redis/v9 v9.18.0
 	github.com/sirupsen/logrus v1.9.4
 	github.com/spf13/cobra v1.10.2
 	golang.org/x/exp v0.0.0-20260212183809-81e46e3db34a
@@ -23,14 +22,12 @@ require (
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/go-sql-driver/mysql v1.8.1 // indirect
-	github.com/redis/go-redis/v9 v9.18.0 // indirect
 	go.uber.org/atomic v1.11.0 // indirect
 	google.golang.org/protobuf v1.36.11 // indirect
 	gorm.io/driver/mysql v1.5.6 // indirect
 )
 
 require (
-	github.com/getsentry/sentry-go v0.42.0
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761 // indirect
