@@ -117,8 +117,6 @@ func (r *RedisCache) GetRefreshToken(ctx context.Context, token string) (*models
 	return refreshToken, nil
 }
 
-// Blacklist Operations
-
 func (r *RedisCache) BlacklistToken(ctx context.Context, token string, ttl time.Duration) error {
 	key := fmt.Sprintf("blacklist:token:%s", token)
 	return r.client.Set(ctx, key, "1", ttl).Err()
@@ -137,8 +135,6 @@ func (r *RedisCache) DeleteTokenFromCache(ctx context.Context, token string) err
 	accessKey := fmt.Sprintf("token:access:%s", token)
 	return r.client.Del(ctx, accessKey).Err()
 }
-
-// Session Operations
 
 func (r *RedisCache) CreateSession(ctx context.Context, clientId, token string, data *models.SessionData) error {
 	key := fmt.Sprintf("session:%s:%s", clientId, token)
@@ -180,7 +176,6 @@ func (r *RedisCache) UpdateLastActivity(ctx context.Context, clientId, token str
 		return err
 	}
 
-	// Reset TTL
 	return r.client.Set(ctx, key, sessionJSON, 24*time.Hour).Err()
 }
 
@@ -196,7 +191,7 @@ func (r *RedisCache) ListSessions(ctx context.Context, clientId string) ([]*mode
 	for _, key := range keys {
 		data, err := r.client.Get(ctx, key).Result()
 		if err != nil {
-			continue // Skip failed reads
+			continue
 		}
 
 		var session models.SessionData
@@ -296,6 +291,55 @@ func (r *RedisCache) GetCachedClient(ctx context.Context, clientId string) (*dom
 
 func (r *RedisCache) InvalidateClient(ctx context.Context, clientId string) error {
 	key := fmt.Sprintf("client:%s", clientId)
+	return r.client.Del(ctx, key).Err()
+}
+
+func (r *RedisCache) CacheCustomer(ctx context.Context, clientId, customerId string, data *domain.CachedCustomer) error {
+	key := fmt.Sprintf("customer:%s:%s", clientId, customerId)
+	b, err := json.Marshal(data)
+	if err != nil {
+		return err
+	}
+	return r.client.Set(ctx, key, b, 24*time.Hour).Err()
+}
+
+func (r *RedisCache) GetCachedCustomer(ctx context.Context, clientId, customerId string) (*domain.CachedCustomer, error) {
+	key := fmt.Sprintf("customer:%s:%s", clientId, customerId)
+	data, err := r.client.Get(ctx, key).Result()
+	if err != nil {
+		return nil, err
+	}
+	var cached domain.CachedCustomer
+	if err := json.Unmarshal([]byte(data), &cached); err != nil {
+		return nil, err
+	}
+	return &cached, nil
+}
+
+func (r *RedisCache) CacheCustomerList(ctx context.Context, clientId string, customers []*domain.CachedCustomer) error {
+	key := fmt.Sprintf("customers:%s", clientId)
+	b, err := json.Marshal(customers)
+	if err != nil {
+		return err
+	}
+	return r.client.Set(ctx, key, b, 5*time.Minute).Err()
+}
+
+func (r *RedisCache) GetCachedCustomerList(ctx context.Context, clientId string) ([]*domain.CachedCustomer, error) {
+	key := fmt.Sprintf("customers:%s", clientId)
+	data, err := r.client.Get(ctx, key).Result()
+	if err != nil {
+		return nil, err
+	}
+	var customers []*domain.CachedCustomer
+	if err := json.Unmarshal([]byte(data), &customers); err != nil {
+		return nil, err
+	}
+	return customers, nil
+}
+
+func (r *RedisCache) InvalidateCustomerList(ctx context.Context, clientId string) error {
+	key := fmt.Sprintf("customers:%s", clientId)
 	return r.client.Del(ctx, key).Err()
 }
 

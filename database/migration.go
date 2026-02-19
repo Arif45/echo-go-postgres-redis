@@ -15,6 +15,9 @@ func AutoMigrate(db *gorm.DB) error {
 		&models.Secret{},
 		&models.AccessToken{},
 		&models.RefreshToken{},
+		&models.Customer{},
+		&models.Person{},
+		&models.Address{},
 	)
 
 	if err != nil {
@@ -32,5 +35,8 @@ func GetAllModels() []interface{} {
 		&models.Secret{},
 		&models.AccessToken{},
 		&models.RefreshToken{},
+		&models.Customer{},
+		&models.Person{},
+		&models.Address{},
 	}
 }

@@ -16,7 +16,7 @@ type Auth struct {
 	cache *cache.RedisCache
 }
 
-func New(db *gorm.DB, cache *cache.RedisCache) *Auth {
+func NewAuthRespository(db *gorm.DB, cache *cache.RedisCache) *Auth {
 	return &Auth{
 		db:    db,
 		cache: cache,

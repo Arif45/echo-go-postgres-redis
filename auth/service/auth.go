@@ -16,7 +16,7 @@ type Auth struct {
 	Cache *cache.RedisCache
 }
 
-func New(repo domain.AuthRepository, cache *cache.RedisCache) *Auth {
+func NewAuthService(repo domain.AuthRepository, cache *cache.RedisCache) *Auth {
 	return &Auth{
 		Repo:  repo,
 		Cache: cache,
