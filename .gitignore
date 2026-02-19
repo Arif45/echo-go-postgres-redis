@@ -1,0 +1,33 @@
+# Binary
+bin/
+
+# Environment & Config (keep only development for reference)
+.env
+.env.*
+config.staging.json
+config.production.json
+
+# Go
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# Dependency (uncomment if not using vendor)
+# vendor/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
