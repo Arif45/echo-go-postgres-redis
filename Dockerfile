@@ -25,4 +25,7 @@ USER appuser
 
 EXPOSE 8080
 
-ENTRYPOINT ["sh", "-c", "./fin-auth migrate up && ./fin-auth serve"]
+# Default: migrate then serve
+# Worker service overrides this entrypoint in docker-compose
+ENTRYPOINT ["./fin-auth"]
+CMD ["serve"]

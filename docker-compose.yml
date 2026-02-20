@@ -1,13 +1,13 @@
 services:
   app:
     build: .
+    entrypoint: ["sh", "-c", "./fin-auth migrate up && ./fin-auth serve"]
     ports:
       - "8080:8080"
-    env_file:
-      - .env
     environment:
-      - DB_HOST=db
-      - REDIS_HOST=redis
+      - CONFIG_JSON=/app/config.docker.json
+    volumes:
+      - ./config.docker.json:/app/config.docker.json
     depends_on:
       db:
         condition: service_healthy
@@ -21,10 +21,24 @@ services:
       start_period: 10s
     restart: unless-stopped
 
+  worker:
+    build: .
+    entrypoint: ["./fin-auth", "worker"]
+    environment:
+      - CONFIG_JSON=/app/config.docker.json
+    volumes:
+      - ./config.docker.json:/app/config.docker.json
+    depends_on:
+      app:
+        condition: service_healthy
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
   db:
     image: postgres:17-alpine
-    env_file:
-      - .env
     environment:
       POSTGRES_USER: ${DB_USER:-postgres}
       POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
