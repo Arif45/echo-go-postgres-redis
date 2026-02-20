@@ -61,8 +61,8 @@ func (auth *Auth) Login(ctx context.Context, req *dto.LoginReq, ipAddress, userA
 	accessToken := utils.GenerateRandomString(50)
 	refreshToken := utils.GenerateRandomString(50)
 
-	accessExpiresAt := time.Now().UTC().Add(24 * time.Hour)
-	refreshExpiresAt := time.Now().UTC().Add(7 * 24 * time.Hour)
+	accessExpiresAt := time.Now().UTC().Add(5 * time.Minute)
+	refreshExpiresAt := time.Now().UTC().Add(10 * time.Minute)
 
 	accessTokenModel := &models.AccessToken{
 		ClientId:  req.ClientId,
